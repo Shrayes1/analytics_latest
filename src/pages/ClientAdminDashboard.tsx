@@ -5,7 +5,7 @@ import LineChart from '../components/ui/LineChart';
 import BarChart from '../components/ui/BarChart';
 import FunnelChart from '../components/ui/FunnelChart';
 import Table from '../components/ui/Table';
-import { Building2, Users, TrendingUp, Activity, Shield, AlertTriangle } from 'lucide-react';
+import { Building2, Users, TrendingUp, Activity, Shield, AlertTriangle, Heart, Star } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { formatPercentage } from '../utils/formatters';
 
@@ -34,7 +34,18 @@ const ClientAdminDashboard: React.FC = () => {
     meetingsScheduled: { value: 156, trend: 8, sparkline: [130, 135, 142, 148, 152, 156] },
     clientSatisfaction: { value: 92, trend: 3, sparkline: [87, 88, 89, 90, 91, 92] },
     revenueGrowth: { value: 18, trend: 5, sparkline: [12, 13, 15, 16, 17, 18] },
-    riskScore: { value: 15, trend: -2, sparkline: [19, 18, 17, 16, 15, 15] }
+    riskScore: { value: 15, trend: -2, sparkline: [19, 18, 17, 16, 15, 15] },
+    productEngagement: { value: 85, trend: 6, sparkline: [78, 80, 82, 83, 84, 85] },
+    productHealth: { value: 90, trend: 5, sparkline: [85, 86, 87, 88, 89, 90] },
+    moduleResponseTime: {  
+      trend: -3, 
+      sparkline: [130, 128, 125, 123, 121, 120],
+      modules: [
+        { name: 'Module A', value: 50 },
+        { name: 'Module B', value: 40 },
+        { name: 'Module C', value: 30 }
+      ]
+    }
   };
 
   const advisorPerformance = [
@@ -53,52 +64,58 @@ const ClientAdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* KPI Summary Row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <KpiCard 
-          title="Total Advisors" 
-          value={clientMetrics.totalAdvisors.value}
-          trend={clientMetrics.totalAdvisors.trend}
-          icon={<Users size={20} className="text-navy" />}
-          sparklineData={clientMetrics.totalAdvisors.sparkline}
-        />
-        <KpiCard 
-          title="Active Clients" 
-          value={clientMetrics.activeClients.value}
-          trend={clientMetrics.activeClients.trend}
-          icon={<Building2 size={20} className="text-navy" />}
-          sparklineData={clientMetrics.activeClients.sparkline}
-        />
-        <KpiCard 
-          title="Meetings Scheduled" 
-          value={clientMetrics.meetingsScheduled.value}
-          trend={clientMetrics.meetingsScheduled.trend}
-          icon={<TrendingUp size={20} className="text-navy" />}
-          sparklineData={clientMetrics.meetingsScheduled.sparkline}
-        />
-        <KpiCard 
-          title="Client Satisfaction" 
-          value={clientMetrics.clientSatisfaction.value}
-          unit="%"
-          trend={clientMetrics.clientSatisfaction.trend}
-          icon={<Activity size={20} className="text-navy" />}
-          sparklineData={clientMetrics.clientSatisfaction.sparkline}
-        />
-        <KpiCard 
-          title="Revenue Growth" 
-          value={clientMetrics.revenueGrowth.value}
-          unit="%"
-          trend={clientMetrics.revenueGrowth.trend}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+      
+      <KpiCard 
+        title="Product Engagement"
+        value={clientMetrics.productEngagement.value}
+        unit='/100'
+        trend={clientMetrics.productEngagement.trend}
+        icon={<Star size={20} className="text-navy" />}
+        type="speedometer"
+      />
+      
+      <KpiCard 
+    title="Avg Session Duration" 
+    value={clientMetrics.clientSatisfaction.value}
+    unit='min'
+    trend={clientMetrics.clientSatisfaction.trend}
+    icon={<Activity size={20} className="text-navy" />}
+    sparklineData={clientMetrics.clientSatisfaction.sparkline}
+  />
+
+<KpiCard 
+          title="Module Response Time" 
+          trend={clientMetrics.moduleResponseTime.trend}
           icon={<Shield size={20} className="text-navy" />}
-          sparklineData={clientMetrics.revenueGrowth.sparkline}
+          sparklineData={clientMetrics.moduleResponseTime.sparkline}
+          type="modules"
+          modules={clientMetrics.moduleResponseTime.modules}
+          className="lg:col-span-2 xl:col-span-4"
         />
-        <KpiCard 
-          title="Risk Score" 
-          value={clientMetrics.riskScore.value}
-          trend={clientMetrics.riskScore.trend}
-          icon={<AlertTriangle size={20} className="text-burgundy" />}
-          sparklineData={clientMetrics.riskScore.sparkline}
-        />
-      </div>
+  
+  <KpiCard 
+    title="Active Users" 
+    value={clientMetrics.activeClients.value}
+    trend={clientMetrics.activeClients.trend}
+    icon={<Building2 size={20} className="text-navy" />}
+    sparklineData={clientMetrics.activeClients.sparkline}
+  />
+     
+ 
+
+  <KpiCard 
+        title="Product Health"
+        value={clientMetrics.productHealth.value}
+        unit="/100"
+        trend={clientMetrics.productHealth.trend}
+        icon={<Heart size={20} className="text-navy" />}
+        type="speedometer"
+      />
+  
+  
+    
+</div>
       
       {/* Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

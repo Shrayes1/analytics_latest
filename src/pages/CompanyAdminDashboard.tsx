@@ -5,7 +5,7 @@ import Table from '../components/ui/Table';
 import SystemStatusCard from '../components/ui/SystemStatusCard';
 import ResourceGauge from '../components/ui/ResourceGauge';
 import LineChart from '../components/ui/LineChart';
-import { Building2, Users, TrendingUp, Activity, Shield, AlertTriangle } from 'lucide-react';
+import { Building2, Users, TrendingUp, Activity, Shield, AlertTriangle, Heart, Star } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 
 const CompanyAdminDashboard: React.FC = () => {
@@ -30,11 +30,11 @@ const CompanyAdminDashboard: React.FC = () => {
   // System health data
   const systemHealth = {
     components: [
-      { name: 'API Gateway', status: 'operational', uptime: 100.0 },
-      { name: 'Database Cluster', status: 'operational', uptime: 99.99 },
-      { name: 'Authentication', status: 'operational', uptime: 100.0 },
-      { name: 'Analytics Engine', status: 'degraded', uptime: 99.85 },
-      { name: 'Storage Service', status: 'operational', uptime: 100.0 }
+      { name: 'API Gateway', status: 'operational' as const, uptime: 100.0 },
+      { name: 'Database Cluster', status: 'operational' as const, uptime: 99.99 },
+      { name: 'Authentication', status: 'operational' as const, uptime: 100.0 },
+      { name: 'Analytics Engine', status: 'degraded' as const, uptime: 99.85 },
+      { name: 'Storage Service', status: 'operational' as const, uptime: 100.0 }
     ],
     resources: {
       cpu: { current: 62, max: 100, warning: 80 },
@@ -72,54 +72,70 @@ const CompanyAdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* KPI Summary Row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <KpiCard 
-          title="Total Clients"
-          value={42}
-          trend={5}
-          icon={<Building2 size={20} className="text-navy" />}
-          sparklineData={[35, 37, 39, 41, 40, 42]}
-        />
-        <KpiCard 
-          title="Active Users"
-          value={1248}
-          trend={15}
-          icon={<Users size={20} className="text-navy" />}
-          sparklineData={[980, 1050, 1120, 1180, 1220, 1248]}
-        />
-        <KpiCard 
-          title="Platform Adoption"
-          value={78}
-          unit="%"
-          trend={8}
-          icon={<TrendingUp size={20} className="text-navy" />}
-          sparklineData={[65, 68, 71, 73, 75, 78]}
-        />
-        <KpiCard 
-          title="Health Score"
-          value={85}
-          unit="%"
-          trend={5}
-          icon={<Activity size={20} className="text-navy" />}
-          sparklineData={[78, 80, 82, 83, 84, 85]}
-        />
-        <KpiCard 
-          title="License Utilization"
-          value={92}
-          unit="%"
-          trend={3}
-          icon={<Shield size={20} className="text-navy" />}
-          sparklineData={[86, 88, 89, 90, 91, 92]}
-        />
-        <KpiCard 
-          title="Active Alerts"
-          value={5}
-          trend={-2}
-          icon={<AlertTriangle size={20} className="text-burgundy" />}
-          sparklineData={[8, 7, 6, 6, 5, 5]}
-        />
-      </div>
+  {/* KPI Summary Row */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <KpiCard 
+      title="Total Clients"
+      value={42}
+      trend={5}
+      icon={<Building2 size={20} className="text-navy" />}
+      sparklineData={[35, 37, 39, 41, 40, 42]}
+    />
+    <KpiCard 
+      title="Active Users"
+      value={1248}
+      trend={15}
+      icon={<Users size={20} className="text-navy" />}
+      sparklineData={[980, 1050, 1120, 1180, 1220, 1248]}
+    />
+    <KpiCard 
+      title="Platform Adoption"
+      value={78}
+      unit="%"
+      trend={8}
+      icon={<TrendingUp size={20} className="text-navy" />}
+      sparklineData={[65, 68, 71, 73, 75, 78]}
+    />
+    <KpiCard 
+      title="Health Score"
+      value={85}
+      
+      trend={5}
+      icon={<Activity size={20} className="text-navy" />}
+      sparklineData={[78, 80, 82, 83, 84, 85]}
+    />
+    <KpiCard 
+      title="License Utilization"
+      value={92}
+      unit="%"
+      trend={3}
+      icon={<Shield size={20} className="text-navy" />}
+      sparklineData={[86, 88, 89, 90, 91, 92]}
+    />
+    <KpiCard 
+      title="Active Alerts"
+      value={5}
+      trend={-2}
+      icon={<AlertTriangle size={20} className="text-burgundy" />}
+      sparklineData={[8, 7, 6, 6, 5, 5]}
+    />
+    <KpiCard 
+      title="Product Engagement Score"
+      value={90/100}
+      
+      trend={6}
+      icon={<Star size={20} className="text-navy" />}
+      sparklineData={[82, 84, 86, 87, 88, 40]}
+    />
+    <KpiCard 
+      title="Product Health Score"
+      value={88}
+      unit="%"
+      trend={4}
+      icon={<Heart size={20} className="text-navy" />}
+      sparklineData={[80, 82, 34, 55, 86, 88]}
+    />
+  </div>
 
       {/* Active Users Analysis */}
       <div className="card">
