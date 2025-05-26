@@ -41,18 +41,19 @@ const ClientAdminDashboard: React.FC = () => {
       trend: -3, 
       sparkline: [130, 128, 125, 123, 121, 120],
       modules: [
-        { name: 'Module A', value: 50 },
-        { name: 'Module B', value: 40 },
-        { name: 'Module C', value: 30 }
+        { name: 'ClientIQ', value: 50 },
+        { name: 'AdvisorIQ', value: 40 },
+        { name: 'ClientGuide', value: 30 }
       ]
     }
   };
 
   const advisorPerformance = [
-    { name: 'Sarah Johnson', clients: 45, satisfaction: 95, revenue: 280000 },
-    { name: 'Michael Chen', clients: 38, satisfaction: 92, revenue: 245000 },
-    { name: 'Emily Davis', clients: 42, satisfaction: 88, revenue: 260000 },
-    { name: 'James Wilson', clients: 35, satisfaction: 90, revenue: 230000 }
+    { name: 'Module A', clients: 45, satisfaction: 95, revenue: 280000 },
+    { name: 'Module B', clients: 38, satisfaction: 92, revenue: 245000 },
+    { name: 'Module C', clients: 42, satisfaction: 88, revenue: 260000 },
+    { name: 'Module D', clients: 35, satisfaction: 90, revenue: 230000 },
+    { name: 'Module E', clients: 77, satisfaction: 80, revenue: 290000 }
   ];
 
   const clientTrends = Array.from({ length: 12 }, (_, i) => ({
@@ -130,7 +131,7 @@ const ClientAdminDashboard: React.FC = () => {
         </div>
         
         <div className="card">
-          <h3 className="mb-4">Top Performing Advisors</h3>
+          <h3 className="mb-4">Module Usage</h3>
           <BarChart 
             data={advisorPerformance} 
             xDataKey="name" 
@@ -155,14 +156,14 @@ const ClientAdminDashboard: React.FC = () => {
         </div>
         
         <div className="card">
-          <h3 className="mb-4">Client Acquisition Funnel</h3>
+          <h3 className="mb-4">Client Usage</h3>
           <FunnelChart 
             data={[
-              { name: 'Leads', value: 100 },
-              { name: 'Qualified', value: 75 },
-              { name: 'Meetings', value: 50 },
-              { name: 'Proposals', value: 35 },
-              { name: 'Closed', value: 25 }
+              { name: 'LPL Financial', value: 100 },
+              { name: 'Ameriprise', value: 75 },
+              { name: 'Plancorp', value: 50 },
+              { name: 'Seqouia', value: 35 },
+              { name: 'BlackRock', value: 25 }
             ]}
           />
         </div>

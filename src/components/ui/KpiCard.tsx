@@ -8,14 +8,14 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface KpiCardProps {
   title: string;
-  value: number;
+  value?: number;
   trend?: number;
   unit?: string;
   icon?: React.ReactNode;
   sparklineData?: number[];
   className?: string;
   type?: 'sparkline' | 'speedometer' | 'modules';
-  modules?: { name: string; value: number }[]; // For modules type
+  modules?: { name: string; value: number }[];
 }
 
 const KpiCard: React.FC<KpiCardProps> = ({
@@ -29,9 +29,10 @@ const KpiCard: React.FC<KpiCardProps> = ({
   type = 'sparkline',
   modules,
 }) => {
+  // Format the value for display (only for non-modules types)
   const formattedValue = unit === '%' || unit === '/100' 
     ? `${value}${unit}`
-    : formatNumber(value);
+    : formatNumber(value ?? 0);
 
   // Determine color for speedometer based on value
   const getSpeedometerColor = (value: number) => {
@@ -44,13 +45,13 @@ const KpiCard: React.FC<KpiCardProps> = ({
   const speedometerData = {
     datasets: [
       {
-        data: [value, 100 - value],
-        backgroundColor: [getSpeedometerColor(value), '#e5e7eb'],
+        data: value != null ? [value, 100 - value] : [100],
+        backgroundColor: value != null ? [getSpeedometerColor(value), '#e5e7eb'] : ['#e5e7eb'],
         borderWidth: 0,
         circumference: 180,
         rotation: 270,
-      },
-    ],
+      }
+    ]
   };
 
   const speedometerOptions = {
@@ -154,10 +155,12 @@ const KpiCard: React.FC<KpiCardProps> = ({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="text-sm text-charcoal-light mb-1">{title}</div>
-          <div className="text-2xl font-bold text-navy">
-            {formattedValue}
-            {unit && unit !== '%' && unit !== '/100' && <span className="text-sm ml-1">{unit}</span>}
-          </div>
+          {type !== 'modules' && value != null && (
+            <div className="text-2xl font-bold text-navy">
+              {formattedValue}
+              {unit && unit !== '%' && unit !== '/100' && <span className="text-sm ml-1">{unit}</span>}
+            </div>
+          )}
           {renderTrend()}
         </div>
         {icon && <div className="text-navy ml-3">{icon}</div>}

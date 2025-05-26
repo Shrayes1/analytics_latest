@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Group } from '@visx/group';
 import { Bar } from '@visx/shape';
 import { scaleLinear, scalePoint } from '@visx/scale';
@@ -7,6 +7,7 @@ import { GridColumns } from '@visx/grid';
 import { withTooltip, Tooltip, defaultStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { ParentSize } from '@visx/responsive';
+import debounce from 'lodash/debounce';
 
 interface FunnelChartProps {
   data: {
@@ -38,6 +39,28 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
   }: FunnelChartProps & WithTooltipProvidedProps<{ name: string; value: number }>) => {
     // Sort data from highest to lowest
     const sortedData = [...data].sort((a, b) => b.value - a.value);
+
+    // Function to split the value equally among three modules
+    const splitValueAmongModules = (value: number) => {
+      const split = value / 3; // Equal split among Module A, B, C
+      return {
+        moduleA: split,
+        moduleB: split,
+        moduleC: split,
+      };
+    };
+
+    // Debounced showTooltip handler
+    const debouncedShowTooltip = useCallback(
+      debounce((tooltipData, tooltipLeft, tooltipTop) => {
+        showTooltip({
+          tooltipData,
+          tooltipLeft,
+          tooltipTop,
+        });
+      }, 100),
+      [showTooltip]
+    );
 
     return (
       <div className={`h-64 ${className}`}>
@@ -84,13 +107,12 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                         rx={4}
                         onMouseMove={(event) => {
                           const coords = event.currentTarget.getBoundingClientRect();
-                          showTooltip({
-                            tooltipData: d,
-                            tooltipLeft: coords.x + coords.width / 2,
-                            tooltipTop: coords.y,
-                          });
+                          debouncedShowTooltip(d, coords.x + coords.width / 2, coords.y);
                         }}
-                        onMouseLeave={() => hideTooltip()}
+                        onMouseLeave={() => {
+                          debouncedShowTooltip.cancel(); // Cancel any pending debounced calls
+                          hideTooltip();
+                        }}
                       />
                     );
                   })}
@@ -105,7 +127,7 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                   <AxisBottom
                     top={yMax}
                     scale={xScale}
-                    tickFormat={(value) => `${value}%`}
+                    tickFormat={(value) => `${value}`}
                     tickLabelProps={() => ({
                       fontSize: 12,
                       textAnchor: 'middle',
@@ -124,7 +146,19 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
           >
             <div>
               <strong>{tooltipData.name}</strong>
-              <div>{tooltipData.value}%</div>
+              <div>Total: {tooltipData.value}</div>
+              <div>
+                {(() => {
+                  const split = splitValueAmongModules(tooltipData.value);
+                  return (
+                    <>
+                      <div>Module A: {split.moduleA.toFixed(2)}</div>
+                      <div>Module B: {split.moduleB.toFixed(2)}</div>
+                      <div>Module C: {split.moduleC.toFixed(2)}</div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
           </Tooltip>
         )}
