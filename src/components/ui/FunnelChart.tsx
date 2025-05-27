@@ -38,18 +38,8 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
     showTooltip,
     hideTooltip,
   }: FunnelChartProps & WithTooltipProvidedProps<{ name: string; value: number }>) => {
-    // Sort data from highest to lowest
-    const sortedData = [...data].sort((a, b) => b.value - a.value);
-
-    // Function to split the value equally among three modules
-    const splitValueAmongModules = (value: number) => {
-      const split = value / 3; // Equal split among Module A, B, C
-      return {
-        moduleA: split,
-        moduleB: split,
-        moduleC: split,
-      };
-    };
+    // Use data in original order (no sorting)
+    const chartData = data;
 
     // Debounced showTooltip handler
     const debouncedShowTooltip = useCallback(
@@ -62,12 +52,12 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
           });
         },
         100,
-        { leading: true, trailing: false } // Only trigger on leading edge to avoid rapid updates
+        { leading: true, trailing: false }
       ),
       [showTooltip]
     );
 
-    // Debounced hideTooltip handler to prevent immediate hiding
+    // Debounced hideTooltip handler
     const debouncedHideTooltip = useCallback(
       debounce(() => {
         hideTooltip();
@@ -88,18 +78,18 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
 
             // Scales
             const xScale = scaleLinear<number>({
-              domain: [0, 100],
+              domain: [0, Math.max(100, ...chartData.map(d => d.value))],
               range: [0, xMax],
               nice: true,
             });
 
             const yScale = scalePoint<string>({
-              domain: sortedData.map(d => d.name),
+              domain: chartData.map(d => d.name),
               range: [0, yMax],
               padding: 0.5,
             });
 
-            const barHeight = Math.min(20, (yMax / sortedData.length) * 0.6);
+            const barHeight = Math.min(20, (yMax / chartData.length) * 0.6);
 
             return (
               <svg width={width} height={height}>
@@ -110,12 +100,12 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                     strokeDasharray="3,3"
                     stroke="#e0e0e0"
                   />
-                  {sortedData.map((d, i) => {
+                  {chartData.map((d, i) => {
                     const y = yScale(d.name) ?? 0;
                     const barWidth = xScale(d.value);
                     return (
                       <Bar
-                        key={`bar-${d.name}`}
+                        key={`bar-${d.name}-${i}`} // Added index to key to handle duplicate names
                         x={0}
                         y={y - barHeight / 2}
                         width={barWidth}
@@ -132,7 +122,7 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                           debouncedShowTooltip(
                             d,
                             svgPoint.x,
-                            svgPoint.y - barHeight / 2 - 10 // Position above the bar
+                            svgPoint.y - barHeight / 2 - 10
                           );
                         }}
                         onMouseLeave={() => {
@@ -165,26 +155,10 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
           }}
         </ParentSize>
         {tooltipOpen && tooltipData && (
-          <Tooltip
-            top={tooltipTop}
-            left={tooltipLeft}
-            style={tooltipStyles}
-          >
+          <Tooltip top={tooltipTop} left={tooltipLeft} style={tooltipStyles}>
             <div>
               <strong>{tooltipData.name}</strong>
-              <div>Total: {tooltipData.value}</div>
-              <div>
-                {(() => {
-                  const split = splitValueAmongModules(tooltipData.value);
-                  return (
-                    <>
-                      <div>Module A: {split.moduleA.toFixed(2)}</div>
-                      <div>Module B: {split.moduleB.toFixed(2)}</div>
-                      <div>Module C: {split.moduleC.toFixed(2)}</div>
-                    </>
-                  );
-                })()}
-              </div>
+              <div>{tooltipData.value}</div>
             </div>
           </Tooltip>
         )}
