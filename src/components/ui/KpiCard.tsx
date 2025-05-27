@@ -30,7 +30,7 @@ const KpiCard: React.FC<KpiCardProps> = ({
   modules,
 }) => {
   // Format the value for display (only for non-modules types)
-  const formattedValue = unit === '%' || unit === '/100' 
+  const formattedValue = unit === '%' || unit === '/100'
     ? `${value}${unit}`
     : formatNumber(value ?? 0);
 
@@ -50,8 +50,8 @@ const KpiCard: React.FC<KpiCardProps> = ({
         borderWidth: 0,
         circumference: 180,
         rotation: 270,
-      }
-    ]
+      },
+    ],
   };
 
   const speedometerOptions = {
@@ -65,10 +65,10 @@ const KpiCard: React.FC<KpiCardProps> = ({
 
   const renderTrend = () => {
     if (trend === undefined) return null;
-    
+
     const trendClass = trend >= 0 ? 'text-sage' : 'text-burgundy';
     const TrendIcon = trend >= 0 ? TrendingUp : TrendingDown;
-    
+
     return (
       <div className={`flex items-center gap-1 text-sm ${trendClass}`}>
         <TrendIcon size={14} />
@@ -76,20 +76,20 @@ const KpiCard: React.FC<KpiCardProps> = ({
       </div>
     );
   };
-  
+
   const renderSparkline = () => {
     if (!sparklineData || sparklineData.length === 0) return null;
-    
+
     const max = Math.max(...sparklineData);
     const min = Math.min(...sparklineData);
     const range = max - min;
-    
+
     const points = sparklineData.map((value, index) => {
       const x = (index / (sparklineData.length - 1)) * 100;
       const y = 100 - ((value - min) / range) * 100;
       return `${x},${y}`;
     }).join(' ');
-    
+
     return (
       <div className="mt-2 h-8">
         <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 100">
@@ -134,16 +134,16 @@ const KpiCard: React.FC<KpiCardProps> = ({
 
   const renderModules = () => {
     if (!modules || modules.length === 0) return null;
-    
+
     return (
-      <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <div className="mt-2 flex flex-row gap-2 h-12 overflow-x-auto">
         {modules.map((module, index) => (
           <div
             key={index}
-            className="bg-white border border-silver rounded-lg p-2 text-center"
+            className="bg-white border border-silver rounded-lg p-1 text-center w-24 flex-shrink-0"
           >
-            <div className="text-xs text-charcoal-light">{module.name}</div>
-            <div className="text-lg font-bold text-navy">{module.value}ms</div>
+            <div className="text-xs text-charcoal-light truncate">{module.name}</div>
+            <div className="text-sm font-bold text-navy">{module.value}ms</div>
           </div>
         ))}
       </div>
@@ -151,7 +151,7 @@ const KpiCard: React.FC<KpiCardProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg border border-silver p-4 hover:shadow-card-hover transition-shadow ${className}`}>
+    <div className={`bg-white rounded-lg border border-silver p-4 hover:shadow-card-hover transition-shadow h-56 ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="text-sm text-charcoal-light mb-1">{title}</div>

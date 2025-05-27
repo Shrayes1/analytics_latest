@@ -139,6 +139,22 @@ const CompanyAdminDashboard: React.FC = () => {
 
       {/* Active Users Analysis */}
       <div className="card">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Object.entries(systemHealth.resources).map(([key, data]) => (
+          <div key={key} className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <Activity className="text-navy" size={20} />
+              <h3>{key.toUpperCase()} Usage</h3>
+            </div>
+            <ResourceGauge
+              label={key.toUpperCase()}
+              value={data.current}
+              max={data.max}
+              warning={data.warning}
+            />
+          </div>
+        ))}
+      </div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Total Active Users Analysis</h3>
           <div className="flex gap-2">
@@ -203,22 +219,7 @@ const CompanyAdminDashboard: React.FC = () => {
       </div>
 
       {/* Resource Monitoring */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Object.entries(systemHealth.resources).map(([key, data]) => (
-          <div key={key} className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <Activity className="text-navy" size={20} />
-              <h3>{key.toUpperCase()} Usage</h3>
-            </div>
-            <ResourceGauge
-              label={key.toUpperCase()}
-              value={data.current}
-              max={data.max}
-              warning={data.warning}
-            />
-          </div>
-        ))}
-      </div>
+      
     </div>
   );
 };

@@ -65,7 +65,7 @@ const ClientAdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* KPI Summary Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
       
       <KpiCard 
         title="Product Engagement"
@@ -85,16 +85,14 @@ const ClientAdminDashboard: React.FC = () => {
     sparklineData={clientMetrics.clientSatisfaction.sparkline}
   />
 
-<KpiCard 
-          title="Module Response Time" 
-          trend={clientMetrics.moduleResponseTime.trend}
-          icon={<Shield size={20} className="text-navy" />}
-          sparklineData={clientMetrics.moduleResponseTime.sparkline}
-          type="modules"
-          modules={clientMetrics.moduleResponseTime.modules}
-          className="lg:col-span-2 xl:col-span-4"
-        />
-  
+<KpiCard
+        title="Module Response Time"
+        trend={clientMetrics.moduleResponseTime.trend}
+        icon={<Shield size={20} className="text-navy" />}
+        sparklineData={clientMetrics.moduleResponseTime.sparkline}
+        type="modules"
+        modules={clientMetrics.moduleResponseTime.modules}
+      />
   <KpiCard 
     title="Active Users" 
     value={clientMetrics.activeClients.value}
@@ -120,15 +118,21 @@ const ClientAdminDashboard: React.FC = () => {
       
       {/* Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card">
-          <h3 className="mb-4">Client Growth Trend</h3>
-          <LineChart 
-            data={clientTrends} 
-            xDataKey="month" 
-            lineDataKey="active"
-            targetValue={350}
+      <div className="card">
+          <h3 className="mb-4">Client Usage</h3>
+          <FunnelChart 
+            data={[
+              { name: 'LPL Financial', value: 100 },
+              { name: 'Ameriprise', value: 75 },
+              { name: 'Plancorp', value: 50 },
+              { name: 'Seqouia', value: 35 },
+              { name: 'BlackRock', value: 25 }
+            ]}
           />
         </div>
+       
+       
+        
         
         <div className="card">
           <h3 className="mb-4">Module Usage</h3>
@@ -154,19 +158,18 @@ const ClientAdminDashboard: React.FC = () => {
             ]}
           />
         </div>
-        
+
         <div className="card">
-          <h3 className="mb-4">Client Usage</h3>
-          <FunnelChart 
-            data={[
-              { name: 'LPL Financial', value: 100 },
-              { name: 'Ameriprise', value: 75 },
-              { name: 'Plancorp', value: 50 },
-              { name: 'Seqouia', value: 35 },
-              { name: 'BlackRock', value: 25 }
-            ]}
+          <h3 className="mb-4">Client Growth Trend</h3>
+          <LineChart 
+            data={clientTrends} 
+            xDataKey="month" 
+            lineDataKey="active"
+            targetValue={350}
           />
         </div>
+        
+        
       </div>
     </div>
   );
