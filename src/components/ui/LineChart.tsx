@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Group } from '@visx/group';
 import { LinePath } from '@visx/shape';
 import { scaleLinear, scalePoint } from '@visx/scale';
@@ -8,6 +8,7 @@ import { withTooltip, Tooltip, defaultStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { ParentSize } from '@visx/responsive';
 import { curveMonotoneX } from '@visx/curve';
+import debounce from 'lodash/debounce';
 
 interface LineChartProps {
   data: any[];
@@ -44,12 +45,39 @@ const LineChart = withTooltip<LineChartProps, any>(
     showTooltip,
     hideTooltip,
   }: LineChartProps & WithTooltipProvidedProps<any>) => {
+    // Debounced showTooltip handler
+    const debouncedShowTooltip = useCallback(
+      debounce(
+        (tooltipData: any, tooltipLeft: number, tooltipTop: number) => {
+          showTooltip({
+            tooltipData,
+            tooltipLeft,
+            tooltipTop,
+          });
+        },
+        100,
+        { leading: true, trailing: false } // Only trigger on leading edge
+      ),
+      [showTooltip]
+    );
+
+    // Debounced hideTooltip handler
+    const debouncedHideTooltip = useCallback(
+      debounce(() => {
+        hideTooltip();
+      }, 200),
+      [hideTooltip]
+    );
+
     return (
-      <div className={`h-64 ${className}`}>
+      <div className={`relative h-64 ${className}`}>
         <ParentSize>
           {({ width, height }) => {
             const xMax = width - margin.left - margin.right;
             const yMax = height - margin.top - margin.bottom;
+
+            // Ensure bounds are positive
+            if (xMax <= 0 || yMax <= 0) return null;
 
             const xScale = scalePoint<string>({
               domain: data.map(d => d[xDataKey]),
@@ -123,14 +151,22 @@ const LineChart = withTooltip<LineChartProps, any>(
                         filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.1))',
                       }}
                       onMouseEnter={(event) => {
-                        const coords = event.currentTarget.getBoundingClientRect();
-                        showTooltip({
-                          tooltipData: d,
-                          tooltipLeft: coords.x,
-                          tooltipTop: coords.y,
-                        });
+                        const svg = event.currentTarget.ownerSVGElement;
+                        if (!svg) return;
+                        const point = svg.createSVGPoint();
+                        point.x = event.clientX;
+                        point.y = event.clientY;
+                        const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
+                        debouncedShowTooltip(
+                          d,
+                          svgPoint.x, // Center of the point
+                          svgPoint.y - 20 // Above the point
+                        );
                       }}
-                      onMouseLeave={() => hideTooltip()}
+                      onMouseLeave={() => {
+                        debouncedShowTooltip.cancel();
+                        debouncedHideTooltip();
+                      }}
                     />
                   ))}
 
@@ -172,6 +208,11 @@ const LineChart = withTooltip<LineChartProps, any>(
             <div>
               <strong className="block mb-1">{tooltipData[xDataKey]}</strong>
               <span className="text-sm">{tooltipData[lineDataKey]}</span>
+              {targetValue && (
+                <div className="text-sm mt-1">
+                  Target: {targetValue}
+                </div>
+              )}
             </div>
           </Tooltip>
         )}

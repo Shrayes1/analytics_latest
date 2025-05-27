@@ -24,6 +24,7 @@ const tooltipStyles = {
   border: '1px solid #999',
   padding: '8px',
   borderRadius: '4px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
 };
 
 const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number }>(
@@ -52,23 +53,38 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
 
     // Debounced showTooltip handler
     const debouncedShowTooltip = useCallback(
-      debounce((tooltipData, tooltipLeft, tooltipTop) => {
-        showTooltip({
-          tooltipData,
-          tooltipLeft,
-          tooltipTop,
-        });
-      }, 100),
+      debounce(
+        (tooltipData: { name: string; value: number }, tooltipLeft: number, tooltipTop: number) => {
+          showTooltip({
+            tooltipData,
+            tooltipLeft,
+            tooltipTop,
+          });
+        },
+        100,
+        { leading: true, trailing: false } // Only trigger on leading edge to avoid rapid updates
+      ),
       [showTooltip]
     );
 
+    // Debounced hideTooltip handler to prevent immediate hiding
+    const debouncedHideTooltip = useCallback(
+      debounce(() => {
+        hideTooltip();
+      }, 200),
+      [hideTooltip]
+    );
+
     return (
-      <div className={`h-64 ${className}`}>
+      <div className={`relative h-64 ${className}`}>
         <ParentSize>
           {({ width, height }) => {
             // Bounds
             const xMax = width - margin.left - margin.right;
             const yMax = height - margin.top - margin.bottom;
+
+            // Ensure bounds are positive
+            if (xMax <= 0 || yMax <= 0) return null;
 
             // Scales
             const xScale = scaleLinear<number>({
@@ -96,22 +112,32 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                   />
                   {sortedData.map((d, i) => {
                     const y = yScale(d.name) ?? 0;
+                    const barWidth = xScale(d.value);
                     return (
                       <Bar
                         key={`bar-${d.name}`}
                         x={0}
                         y={y - barHeight / 2}
-                        width={xScale(d.value)}
+                        width={barWidth}
                         height={barHeight}
                         fill={`rgba(10, 49, 97, ${1 - i * 0.15})`}
                         rx={4}
                         onMouseMove={(event) => {
-                          const coords = event.currentTarget.getBoundingClientRect();
-                          debouncedShowTooltip(d, coords.x + coords.width / 2, coords.y);
+                          const svg = event.currentTarget.ownerSVGElement;
+                          if (!svg) return;
+                          const point = svg.createSVGPoint();
+                          point.x = event.clientX;
+                          point.y = event.clientY;
+                          const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
+                          debouncedShowTooltip(
+                            d,
+                            svgPoint.x,
+                            svgPoint.y - barHeight / 2 - 10 // Position above the bar
+                          );
                         }}
                         onMouseLeave={() => {
-                          debouncedShowTooltip.cancel(); // Cancel any pending debounced calls
-                          hideTooltip();
+                          debouncedShowTooltip.cancel();
+                          debouncedHideTooltip();
                         }}
                       />
                     );

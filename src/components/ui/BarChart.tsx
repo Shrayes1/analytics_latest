@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Group } from '@visx/group';
 import { Bar } from '@visx/shape';
 import { scaleLinear, scalePoint } from '@visx/scale';
@@ -7,6 +7,7 @@ import { GridColumns, GridRows } from '@visx/grid';
 import { withTooltip, Tooltip, defaultStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { ParentSize } from '@visx/responsive';
+import debounce from 'lodash/debounce';
 
 interface BarChartProps {
   data: any[];
@@ -43,13 +44,40 @@ const BarChart = withTooltip<BarChartProps, any>(
     showTooltip,
     hideTooltip,
   }: BarChartProps & WithTooltipProvidedProps<any>) => {
+    // Debounced showTooltip handler
+    const debouncedShowTooltip = useCallback(
+      debounce(
+        (tooltipData: any, tooltipLeft: number, tooltipTop: number) => {
+          showTooltip({
+            tooltipData,
+            tooltipLeft,
+            tooltipTop,
+          });
+        },
+        100,
+        { leading: true, trailing: false } // Only trigger on leading edge
+      ),
+      [showTooltip]
+    );
+
+    // Debounced hideTooltip handler
+    const debouncedHideTooltip = useCallback(
+      debounce(() => {
+        hideTooltip();
+      }, 200),
+      [hideTooltip]
+    );
+
     return (
-      <div className={`h-64 ${className}`}>
+      <div className={`relative h-64 ${className}`}>
         <ParentSize>
           {({ width, height }) => {
             // Bounds
             const xMax = width - margin.left - margin.right;
             const yMax = height - margin.top - margin.bottom;
+
+            // Ensure bounds are positive
+            if (xMax <= 0 || yMax <= 0) return null;
 
             // Scales for vertical bars
             const verticalXScale = scalePoint<string>({
@@ -106,14 +134,22 @@ const BarChart = withTooltip<BarChartProps, any>(
                             rx={4}
                             opacity={0.9}
                             onMouseMove={(event) => {
-                              const coords = event.currentTarget.getBoundingClientRect();
-                              showTooltip({
-                                tooltipData: d,
-                                tooltipLeft: coords.x + coords.width,
-                                tooltipTop: coords.y,
-                              });
+                              const svg = event.currentTarget.ownerSVGElement;
+                              if (!svg) return;
+                              const point = svg.createSVGPoint();
+                              point.x = event.clientX;
+                              point.y = event.clientY;
+                              const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
+                              debouncedShowTooltip(
+                                d,
+                                svgPoint.x + barWidth, // Right of the bar
+                                svgPoint.y - barHeight / 2 - 10 // Above the bar
+                              );
                             }}
-                            onMouseLeave={() => hideTooltip()}
+                            onMouseLeave={() => {
+                              debouncedShowTooltip.cancel();
+                              debouncedHideTooltip();
+                            }}
                           />
                         );
                       })}
@@ -161,14 +197,22 @@ const BarChart = withTooltip<BarChartProps, any>(
                             rx={4}
                             opacity={0.9}
                             onMouseMove={(event) => {
-                              const coords = event.currentTarget.getBoundingClientRect();
-                              showTooltip({
-                                tooltipData: d,
-                                tooltipLeft: coords.x + coords.width / 2,
-                                tooltipTop: coords.y,
-                              });
+                              const svg = event.currentTarget.ownerSVGElement;
+                              if (!svg) return;
+                              const point = svg.createSVGPoint();
+                              point.x = event.clientX;
+                              point.y = event.clientY;
+                              const svgPoint = point.matrixTransform(svg.getScreenCTM()?.inverse());
+                              debouncedShowTooltip(
+                                d,
+                                svgPoint.x, // Center of the bar
+                                svgPoint.y - 10 // Above the bar
+                              );
                             }}
-                            onMouseLeave={() => hideTooltip()}
+                            onMouseLeave={() => {
+                              debouncedShowTooltip.cancel();
+                              debouncedHideTooltip();
+                            }}
                           />
                         );
                       })}
