@@ -17,7 +17,7 @@ interface FunnelChartProps {
   className?: string;
 }
 
-const margin = { top: 20, right: 30, bottom: 40, left: 120 };
+const margin = { top: 20, right: 30, bottom: 40, left: 100 };
 const tooltipStyles = {
   ...defaultStyles,
   backgroundColor: 'white',
@@ -134,6 +134,8 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                   })}
                   <AxisLeft
                     scale={yScale}
+                    label="Modules"
+                    labelProps={{ fontSize: 12, textAnchor: 'middle', dx: -45 }}
                     tickLabelProps={() => ({
                       fontSize: 12,
                       textAnchor: 'end',
@@ -143,6 +145,8 @@ const FunnelChart = withTooltip<FunnelChartProps, { name: string; value: number 
                   <AxisBottom
                     top={yMax}
                     scale={xScale}
+                    label="Time (in ms)"
+                    labelProps={{ fontSize: 12, textAnchor: 'middle', dy: 0 }}
                     tickFormat={(value) => `${value}`}
                     tickLabelProps={() => ({
                       fontSize: 12,

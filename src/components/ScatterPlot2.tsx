@@ -14,12 +14,15 @@ interface ScatterPlotProps {
     name: string;
     engagementScore: number;
     healthScore: number;
+    users: number;
+    quadrant: string;
     color: string;
   }[];
   className?: string;
 }
 
-const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+const margin = { top: 20, right: 60, bottom: 50, left: 60 };
+
 const tooltipStyles = {
   ...defaultStyles,
   backgroundColor: 'white',
@@ -31,7 +34,7 @@ const tooltipStyles = {
 
 const ScatterPlot2 = withTooltip<
   ScatterPlotProps,
-  { name: string; engagementScore: number; healthScore: number }
+  { name: string; engagementScore: number; healthScore: number; users: number; quadrant: string }
 >(
   ({
     data,
@@ -42,7 +45,14 @@ const ScatterPlot2 = withTooltip<
     tooltipTop = 0,
     showTooltip,
     hideTooltip,
-  }: ScatterPlotProps & WithTooltipProvidedProps<{ name: string; engagementScore: number; healthScore: number }>) => {
+  }: ScatterPlotProps &
+    WithTooltipProvidedProps<{
+      name: string;
+      engagementScore: number;
+      healthScore: number;
+      users: number;
+      quadrant: string;
+    }>) => {
     const debouncedShowTooltip = useCallback(
       debounce((tooltipData, tooltipLeft, tooltipTop) => {
         showTooltip({
@@ -62,13 +72,16 @@ const ScatterPlot2 = withTooltip<
     );
 
     return (
-      <div className={`relative w-full max-w-[800px] mx-auto ${className}`} style={{ height: 500 }}>
+      <div className={`relative w-full h-full ${className}`}>
         <ParentSize>
           {({ width, height }) => {
-            const constrainedWidth = Math.min(width, 800);
-            const effectiveHeight = Math.max(height, 400); // Ensure usable height
+            const fallbackWidth = 600;
+            const fallbackHeight = 500;
 
-            const xMax = constrainedWidth - margin.left - margin.right;
+            const adjustedWidth = width || fallbackWidth;
+            const effectiveHeight = height || fallbackHeight;
+
+            const xMax = adjustedWidth - margin.left - margin.right;
             const yMax = effectiveHeight - margin.top - margin.bottom;
 
             if (xMax <= 0 || yMax <= 0) {
@@ -87,13 +100,26 @@ const ScatterPlot2 = withTooltip<
               nice: true,
             });
 
-            const tickValues = Array.from({ length: 11 }, (_, i) => i * 10);
+            const yTickValues = Array.from({ length: 11 }, (_, i) => i * 10);
+            const xTickValues = Array.from({ length: 21 }, (_, i) => i * 5);
 
             return (
-              <svg width={constrainedWidth} height={effectiveHeight} style={{ overflow: 'visible' }}>
+              <svg width={adjustedWidth} height={effectiveHeight} style={{ background: 'white' }}>
                 <Group left={margin.left} top={margin.top}>
-                  <GridRows scale={yScale} width={xMax} strokeDasharray="3,3" stroke="#e0e0e0" tickValues={tickValues} />
-                  <GridColumns scale={xScale} height={yMax} strokeDasharray="3,3" stroke="#e0e0e0" tickValues={tickValues} />
+                  <GridRows
+                    scale={yScale}
+                    width={xMax}
+                    strokeDasharray="3,3"
+                    stroke="#e0e0e0"
+                    tickValues={yTickValues}
+                  />
+                  <GridColumns
+                    scale={xScale}
+                    height={yMax}
+                    strokeDasharray="3,3"
+                    stroke="#e0e0e0"
+                    tickValues={xTickValues}
+                  />
                   {data.map((d, i) => {
                     const cx = xScale(d.engagementScore);
                     const cy = yScale(d.healthScore);
@@ -123,17 +149,17 @@ const ScatterPlot2 = withTooltip<
                   <AxisLeft
                     scale={yScale}
                     label="Product Health Score"
-                    labelProps={{ fontSize: 12, textAnchor: 'middle', dy: -30 }}
-                    tickValues={tickValues}
-                    tickLabelProps={() => ({ fontSize: 12, textAnchor: 'end', dx: -8 })}
+                    labelProps={{ fontSize: 12, textAnchor: 'middle' }}
+                    tickValues={yTickValues}
+                    tickLabelProps={() => ({ fontSize: 12, textAnchor: 'end', dx: -3 })}
                   />
                   <AxisBottom
                     top={yMax}
                     scale={xScale}
                     label="Product Engagement Score"
-                    labelProps={{ fontSize: 12, textAnchor: 'middle', dy: 25 }}
-                    tickValues={tickValues}
-                    tickLabelProps={() => ({ fontSize: 12, textAnchor: 'middle' })}
+                    labelProps={{ fontSize: 12, textAnchor: 'middle', dy: 10 }}
+                    tickValues={xTickValues.filter((v) => v % 10 === 0)}
+                    tickLabelProps={() => ({ fontSize: 10, textAnchor: 'middle' })}
                   />
                 </Group>
               </svg>
@@ -144,8 +170,10 @@ const ScatterPlot2 = withTooltip<
           <Tooltip top={tooltipTop} left={tooltipLeft} style={tooltipStyles}>
             <div>
               <strong>{tooltipData.name}</strong>
-              <div>Engagement: {tooltipData.engagementScore}</div>
-              <div>Health: {tooltipData.healthScore}</div>
+              <div>Engagement Score: {tooltipData.engagementScore}</div>
+              <div>Health Score: {tooltipData.healthScore}</div>
+              <div>Users: {tooltipData.users}</div>
+              <div>Quadrant: {tooltipData.quadrant}</div>
             </div>
           </Tooltip>
         )}

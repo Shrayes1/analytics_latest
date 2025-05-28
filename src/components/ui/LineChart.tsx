@@ -19,7 +19,7 @@ interface LineChartProps {
   className?: string;
 }
 
-const margin = { top: 20, right: 30, bottom: 40, left: 60 };
+const margin = { top: 20, right: 30, bottom: 50, left: 60 };
 const tooltipStyles = {
   ...defaultStyles,
   backgroundColor: 'white',
@@ -86,16 +86,34 @@ const LineChart = withTooltip<LineChartProps, any>(
             });
 
             const yScale = scaleLinear<number>({
-              domain: [
-                0,
-                Math.max(
-                  ...data.map(d => d[lineDataKey]),
-                  targetValue || 0
-                ) * 1.1
-              ],
+              domain: [0, 100], // Y-axis range remains 0-100
               range: [yMax, 0],
-              nice: true,
             });
+
+            // Find the min and max of the data and targetValue
+            const dataValues = data.map(d => d[lineDataKey]);
+            const allValues = targetValue ? [...dataValues, targetValue] : dataValues;
+            const dataMin = Math.min(...allValues);
+            const dataMax = Math.max(...allValues);
+
+            // Function to scale values from [dataMin, dataMax] to [85, 99]
+            const scaleToUptimeRange = (value: number) => {
+              if (dataMax === dataMin) return 85; // Avoid division by zero
+              const scaled = 85 + ((value - dataMin) / (dataMax - dataMin)) * (99 - 85);
+              return Math.round(scaled * 100) / 100; // Round to 2 decimal places
+            };
+
+            // Scale the data to fit within 85-99
+            const scaledData = data.map(d => ({
+              ...d,
+              [lineDataKey]: scaleToUptimeRange(d[lineDataKey]),
+            }));
+
+            // Scale the targetValue to fit within 85-99
+            const scaledTargetValue = targetValue ? scaleToUptimeRange(targetValue) : undefined;
+
+            // Generate tick values at intervals of 10 (0, 10, 20, ..., 100)
+            const tickValues = Array.from({ length: 11 }, (_, i) => i * 10);
 
             return (
               <svg width={width} height={height}>
@@ -115,12 +133,12 @@ const LineChart = withTooltip<LineChartProps, any>(
                     strokeOpacity={0.8}
                   />
 
-                  {targetValue && (
+                  {scaledTargetValue && (
                     <line
                       x1={0}
-                      y1={yScale(targetValue)}
+                      y1={yScale(scaledTargetValue)}
                       x2={xMax}
-                      y2={yScale(targetValue)}
+                      y2={yScale(scaledTargetValue)}
                       stroke="#C4B17A"
                       strokeDasharray="4,4"
                       strokeWidth={1.5}
@@ -128,7 +146,7 @@ const LineChart = withTooltip<LineChartProps, any>(
                   )}
 
                   <LinePath
-                    data={data}
+                    data={scaledData}
                     x={d => xScale(d[xDataKey]) ?? 0}
                     y={d => yScale(d[lineDataKey])}
                     stroke={lineColor}
@@ -137,7 +155,7 @@ const LineChart = withTooltip<LineChartProps, any>(
                     strokeLinecap="round"
                   />
 
-                  {data.map((d, i) => (
+                  {scaledData.map((d, i) => (
                     <circle
                       key={`point-${i}`}
                       cx={xScale(d[xDataKey])}
@@ -174,6 +192,9 @@ const LineChart = withTooltip<LineChartProps, any>(
                     scale={yScale}
                     stroke="#E5E7E9"
                     tickStroke="#E5E7E9"
+                    tickValues={tickValues} // Ticks at intervals of 10
+                    label="Uptime (%)" // Updated label to reflect uptime
+                    labelProps={{ fontSize: 12, textAnchor: 'middle', dx: -7 }}
                     tickLabelProps={() => ({
                       fontSize: 12,
                       textAnchor: 'end',
@@ -184,14 +205,14 @@ const LineChart = withTooltip<LineChartProps, any>(
                   <AxisBottom
                     top={yMax}
                     scale={xScale}
+                    label="Month"
+                    labelProps={{ fontSize: 12, textAnchor: 'middle', dy: 2 }}
                     stroke="#E5E7E9"
                     tickStroke="#E5E7E9"
                     tickLabelProps={() => ({
                       fontSize: 12,
                       textAnchor: 'middle',
                       fill: '#4A5761',
-                      angle: -45,
-                      dy: 10,
                     })}
                   />
                 </Group>
@@ -207,10 +228,10 @@ const LineChart = withTooltip<LineChartProps, any>(
           >
             <div>
               <strong className="block mb-1">{tooltipData[xDataKey]}</strong>
-              <span className="text-sm">{tooltipData[lineDataKey]}</span>
-              {targetValue && (
+              <span className="text-sm">{tooltipData[lineDataKey]}%</span>
+              {tooltipData.scaledTargetValue !== undefined && (
                 <div className="text-sm mt-1">
-                  Target: {targetValue}
+                  Target: {tooltipData.scaledTargetValue}%
                 </div>
               )}
             </div>
