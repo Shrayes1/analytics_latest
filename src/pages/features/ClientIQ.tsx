@@ -30,27 +30,16 @@ const ClientIQ: React.FC = () => {
         <h2 className="text-2xl font-heading">Client IQ Analytics</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         <KpiCard 
-          title="Profiles Accessed" 
+          title="Module Access Rate" 
           value={clientIqKPIs.profilesAccessed.value} 
           trend={clientIqKPIs.profilesAccessed.trend}
         />
         <KpiCard 
-          title="Total Queries" 
+          title="Total Number of Queries Asked" 
           value={clientIqKPIs.queriesAsked.value} 
           trend={clientIqKPIs.queriesAsked.trend}
-        />
-        <KpiCard 
-          title="Success Rate" 
-          value={clientIqKPIs.querySuccessRate.value} 
-          unit="%"
-          trend={clientIqKPIs.querySuccessRate.trend}
-        />
-        <KpiCard 
-          title="Actions Generated" 
-          value={clientIqKPIs.nextActionsGenerated.value} 
-          trend={clientIqKPIs.nextActionsGenerated.trend}
         />
       </div>
 

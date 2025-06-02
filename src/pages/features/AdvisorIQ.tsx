@@ -6,10 +6,9 @@ import DonutChart from '../../components/ui/DonutChart';
 import Table from '../../components/ui/Table';
 
 const advisorKPIs = {
-  activeAdvisors: { value: 125, trend: 10 },
-  queriesPerDay: { value: 450, trend: 15 },
-  successRate: { value: 88, trend: 5 },
-  timeSaved: { value: 24.5, trend: 12 }
+  moduleAccessRate: { value: 125, trend: 10 },
+  trendingClientActionRate: { value: 450, trend: 15 }
+  // Removed successRate and timeSaved
 };
 
 const queryDistribution = [
@@ -42,28 +41,16 @@ const AdvisorIQ: React.FC = () => {
         <h2 className="text-2xl font-heading">Advisor IQ Analytics</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         <KpiCard 
-          title="Active Advisors" 
-          value={advisorKPIs.activeAdvisors.value} 
-          trend={advisorKPIs.activeAdvisors.trend}
+          title="Module Access Rate" 
+          value={advisorKPIs.moduleAccessRate.value} 
+          trend={advisorKPIs.moduleAccessRate.trend}
         />
         <KpiCard 
-          title="Queries Per Day" 
-          value={advisorKPIs.queriesPerDay.value} 
-          trend={advisorKPIs.queriesPerDay.trend}
-        />
-        <KpiCard 
-          title="Success Rate" 
-          value={advisorKPIs.successRate.value} 
-          unit="%"
-          trend={advisorKPIs.successRate.trend}
-        />
-        <KpiCard 
-          title="Time Saved" 
-          value={advisorKPIs.timeSaved.value} 
-          unit="hrs/week"
-          trend={advisorKPIs.timeSaved.trend}
+          title="Trending Client Action Rate" 
+          value={advisorKPIs.trendingClientActionRate.value} 
+          trend={advisorKPIs.trendingClientActionRate.trend}
         />
       </div>
 

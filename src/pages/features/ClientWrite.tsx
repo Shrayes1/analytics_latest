@@ -5,10 +5,11 @@ import BarChart from '../../components/ui/BarChart';
 import DonutChart from '../../components/ui/DonutChart';
 
 const writeKPIs = {
-  documentsGenerated: { value: 1248, trend: 15 },
-  avgCompletionTime: { value: 8.5, trend: -12 },
-  satisfactionScore: { value: 4.8, trend: 0.3 },
-  revisionsNeeded: { value: 12, trend: -25 }
+  moduleAccessRate: { value: 1248, trend: 15 },
+  emailSendRate: { value: 8.5, trend: -12 },
+  wealthProfileActionRate: { value: 4.8, trend: 0.3 },
+  emailSearchBarUsageRate: { value: 12, trend: -25 },
+  manualVsGeneratedEmails: { value: 60, trend: 10 } // example: 60% manual, 40% generated
 };
 
 const documentTypes = [
@@ -30,28 +31,33 @@ const ClientWrite: React.FC = () => {
         <h2 className="text-2xl font-heading">Client Write Analytics</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard 
-          title="Documents Generated" 
-          value={writeKPIs.documentsGenerated.value} 
-          trend={writeKPIs.documentsGenerated.trend}
+          title="Module Access Rate" 
+          value={writeKPIs.moduleAccessRate.value} 
+          trend={writeKPIs.moduleAccessRate.trend}
         />
         <KpiCard 
-          title="Avg Completion Time" 
-          value={writeKPIs.avgCompletionTime.value} 
+          title="Email Send Rate" 
+          value={writeKPIs.emailSendRate.value} 
           unit="min"
-          trend={writeKPIs.avgCompletionTime.trend}
+          trend={writeKPIs.emailSendRate.trend}
         />
         <KpiCard 
-          title="Satisfaction Score" 
-          value={writeKPIs.satisfactionScore.value} 
-          trend={writeKPIs.satisfactionScore.trend}
+          title="Wealth Profile Action Rate" 
+          value={writeKPIs.wealthProfileActionRate.value} 
+          trend={writeKPIs.wealthProfileActionRate.trend}
         />
         <KpiCard 
-          title="Revisions Needed" 
-          value={writeKPIs.revisionsNeeded.value} 
+          title="Email Generate Search Bar Usage Rate" 
+          value={writeKPIs.emailSearchBarUsageRate.value} 
           unit="%"
-          trend={writeKPIs.revisionsNeeded.trend}
+          trend={writeKPIs.emailSearchBarUsageRate.trend}
+        />
+        <KpiCard 
+          title="Manually Edited vs Generated Emails" 
+          value={writeKPIs.manualVsGeneratedEmails.value} 
+          trend={writeKPIs.manualVsGeneratedEmails.trend}
         />
       </div>
 

@@ -53,23 +53,23 @@ const ClientMeet: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard 
-          title="Total Meetings" 
+          title="Module Access Rate" 
           value={clientMeetKPIs.totalMeetings.value} 
           trend={clientMeetKPIs.totalMeetings.trend}
         />
         <KpiCard 
-          title="Average Duration" 
+          title="Number of Meetings Scheduled" 
           value={clientMeetKPIs.avgDuration.value} 
           unit="min"
           trend={clientMeetKPIs.avgDuration.trend}
         />
         <KpiCard 
-          title="Notes Generated" 
+          title="Agenda Creation Rate" 
           value={clientMeetKPIs.notesGenerated.value} 
           trend={clientMeetKPIs.notesGenerated.trend}
         />
         <KpiCard 
-          title="Client Satisfaction" 
+          title="Action Item Completion Rate" 
           value={clientMeetKPIs.clientSatisfaction.value} 
           trend={clientMeetKPIs.clientSatisfaction.trend}
         />
