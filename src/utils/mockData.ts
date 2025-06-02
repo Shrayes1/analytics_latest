@@ -41,6 +41,7 @@ export const featureUsageData = [
   { name: 'Client IQ', value: 25, color: '#7D98B3' },
   { name: 'Advisor IQ', value: 20, color: '#C4B17A' },
   { name: 'Client Write', value: 15, color: '#58776C' },
+  { name: 'Client Guide', value: 15, color: '#58776C' },
   { name: 'Firm IQ', value: 5, color: '#722F37' }
 ];
 

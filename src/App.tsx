@@ -6,6 +6,7 @@ import ClientMeet from './pages/features/ClientMeet';
 import ClientIQ from './pages/features/ClientIQ';
 import AdvisorIQ from './pages/features/AdvisorIQ';
 import ClientWrite from './pages/features/ClientWrite';
+import ClientGuide from './pages/features/ClientGuide';
 import FirmIQ from './pages/features/FirmIQ';
 import ReportsPage from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
@@ -21,6 +22,7 @@ function App() {
         <Route path="client-iq" element={<ClientIQ />} />
         <Route path="advisor-iq" element={<AdvisorIQ />} />
         <Route path="client-write" element={<ClientWrite />} />
+        <Route path="client-guide" element={<ClientGuide />} />
         <Route path="firm-iq" element={<FirmIQ />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="settings" element={<SettingsPage />} />

@@ -18,6 +18,7 @@ const Header: React.FC = () => {
     if (path === '/client-iq') return 'Client IQ';
     if (path === '/advisor-iq') return 'Advisor IQ';
     if (path === '/client-write') return 'Client Write';
+    if (path === '/client-guide') return 'Client Guide';
     if (path === '/firm-iq') return 'Firm IQ';
     if (path === '/reports') return 'Reports';
     if (path === '/settings') return 'Settings';

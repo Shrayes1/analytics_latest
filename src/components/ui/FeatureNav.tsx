@@ -6,7 +6,7 @@ const FeatureNav: React.FC = () => {
   const location = useLocation();
   
   // Only show feature nav on feature pages and dashboard
-  const showNav = ['/', '/client-meet', '/client-iq', '/advisor-iq', '/client-write', '/firm-iq'].includes(location.pathname);
+  const showNav = ['/', '/client-meet', '/client-iq', '/advisor-iq', '/client-write', '/client-guide','/firm-iq'].includes(location.pathname);
   
   if (!showNav) return null;
 
@@ -35,6 +35,10 @@ const FeatureNav: React.FC = () => {
       <NavLink to="/client-write" className={getLinkClass}>
         <PenTool size={18} />
         <span>Client Write</span>
+      </NavLink>
+      <NavLink to="/client-guide" className={getLinkClass}>
+        <Building2 size={18} />
+        <span>Client Guide</span>
       </NavLink>
       <NavLink to="/firm-iq" className={getLinkClass}>
         <Building2 size={18} />
