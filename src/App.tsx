@@ -8,7 +8,7 @@ import AdvisorIQ from './pages/features/AdvisorIQ';
 import ClientWrite from './pages/features/ClientWrite';
 import ClientGuide from './pages/features/ClientGuide';
 import FirmIQ from './pages/features/FirmIQ';
-import ReportsPage from './pages/ReportsPage';
+import WealthAnalyticsDashboard from './pages/WealthAnalyticsDashboard';
 import SettingsPage from './pages/SettingsPage';
 import HelpPage from './pages/HelpPage';
 
@@ -24,7 +24,7 @@ function App() {
         <Route path="client-write" element={<ClientWrite />} />
         <Route path="client-guide" element={<ClientGuide />} />
         <Route path="firm-iq" element={<FirmIQ />} />
-        <Route path="reports" element={<ReportsPage />} />
+        <Route path="reports" element={<WealthAnalyticsDashboard />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="help" element={<HelpPage />} />
       </Route>
